@@ -87,6 +87,7 @@ class Login extends Component {
                                         // 使用正则表达式
                                         { pattern: /^[a-zA-Z0-9]+$/, message: '用户名必须是英文、数字或下划线组成!' },
                                     ],
+                                    initialValue:'admin' // 初始值
                                 })(
                                     <Input
                                     prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -112,7 +113,7 @@ class Login extends Component {
                                     // 自定义验证
                                     rules:[
                                         {
-                                            validator: this.validatePwd
+                                            validator: this.validatePwd // 自定义验证
                                         }
                                     ],
                                 })(
