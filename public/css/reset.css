@@ -75,11 +75,12 @@ th {
 }
 
 /* 往reset里添加内容 */
-html,body{
+html, body {
     height: 100%;
     width: 100%;
 }
-#root{
+
+#root {
     height: 100%;
     width: 100%;
 }
