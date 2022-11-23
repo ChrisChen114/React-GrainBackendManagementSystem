@@ -1,8 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-// import 'antd/dist/antd.less'
-// import '~antd/dist/antd.less';
+import storageUtils from "./utils/storageUtils";
+import memoryUtils from "./utils/memoryUtils";
 
-ReactDOM.render(<App />, document.getElementById('root'));
+// 读取local中保存的user，保存到内存中
+// 好处：维持登录与自动登录
+const user = storageUtils.getUser();
+memoryUtils.user = user;
+
+ReactDOM.render(<App/>, document.getElementById('root'));
 
