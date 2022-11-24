@@ -7,7 +7,7 @@ import {
     Checkbox, message
 } from 'antd';
 import './Login.less';
-import logo from './images/logo.png'
+import logo from '../../assets/images/logo.png'
 import {reqLogin} from '../../api/index'
 import memoryUtils from "../../utils/memoryUtils";
 import storageUtils from "../../utils/storageUtils";
