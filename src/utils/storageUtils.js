@@ -17,8 +17,8 @@ export default {
 
 
     /*
-* 读取user
-* */
+    * 读取user
+    * */
     // getUser() {
     //     return JSON.parse(localStorage.getItem(USER_KEY) || '{}');
     // },
@@ -27,8 +27,8 @@ export default {
     },
 
     /*
-* 删除user
-* */
+    * 删除user
+    * */
     // removeUser(){
     //     localStorage.removeItem(USER_KEY);
     // }
