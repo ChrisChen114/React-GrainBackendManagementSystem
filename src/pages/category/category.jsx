@@ -94,6 +94,7 @@ class Category extends Component {
 
         // 需要在setState里面增加一个回调函数
         this.setState({
+            //_id和name字段均来自mongoDB获取到的一条记录对象
             parentId: category._id,
             parentName: category.name,
         }, () => {//在状态更新且重新render()后执行
@@ -252,6 +253,7 @@ class Category extends Component {
                             categoryName={category.name}
                             setForm={form => this.form = form}
                         />
+                        {/* category.name中的name，应该是mongoDB的一条记录对象的name属性 */}
                         {/*  setForm={form=>this.form=form}，要实现子组件向父组件传递数据  */}
                     </Modal>
                 </Card>
