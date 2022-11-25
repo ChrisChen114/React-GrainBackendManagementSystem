@@ -4,7 +4,7 @@ import {
     Icon,
     Input,
     Button,
-    Checkbox, message
+    message
 } from 'antd';
 import './Login.less';
 import logo from '../../assets/images/logo.png'
