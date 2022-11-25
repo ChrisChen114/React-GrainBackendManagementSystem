@@ -55,12 +55,13 @@ class Category extends Component {
     };
 
     //    异步获取一级/二级分类列表数据
-    getCategories = async () => {
+    // parentId: 如果没有指定则根据状态中的parentId请求，如果指定了则根据指定的请求
+    getCategories = async (parentId) => {
         //在发请求前，显示loading
         this.setState({loading: true});
 
-        //
-        const {parentId} = this.state;
+        // parentId: 如果没有指定则根据状态中的parentId请求，如果指定了则根据指定的请求
+        parentId = parentId || this.state.parentId;
 
         // 发异步ajax请求，获取数据，返回的是Promise对象
         const result = await reqCategories(parentId);
@@ -92,6 +93,7 @@ class Category extends Component {
         // this.getCategories();
         // ！！！注意：这样写parentId并没有更新(不能立即获取最新的状态，因为setState()是异步更新的)，依然是0，如何解决？
 
+        // 更新二级子列表的parentId
         // 需要在setState里面增加一个回调函数
         this.setState({
             //_id和name字段均来自mongoDB获取到的一条记录对象
@@ -138,8 +140,42 @@ class Category extends Component {
     }
 
     // 添加分类
-    addCategory = () => {
+    addCategory = async () => {
+        // 进行表单验证，只有通过了才处理
+        this.form.validateFields(async (err, values) => {
+            if (!err) {
+                // 1. 收集数据，并提交请求
+                // const {parentId, categoryName} = this.form.getFieldsValue();
+                // values里面会有parentId, categoryName。效果一样，但是更简洁
+                const {parentId, categoryName} = values;
+                //清除数据，否则修改了某一个后，再修改其他的会记录上一次的内容
+                // 清除输入数据
+                this.form.resetFields()
 
+                const result = await reqAddCategory(parentId, categoryName);
+                if (result.status === 0) {//添加成功
+                    // 添加的分类就是当前分类列表下的分类
+                    if (parentId === this.state.parentId) {
+                        // 2. 重新获取当前分类列表显示
+                        this.getCategories();
+                    } else if (parentId === '0') {
+                        /*
+                        * 在二级分类列表下添加一级分类，重新获取一级分类列表，
+                        * 但不需要显示一级列表，还是停留在二级列表上显示
+                        * 难点！！！
+                        * */
+                        this.getCategories('0');
+                    }
+                } else {
+                    message.error('添加分类列表失败');
+                }
+                //    3. 隐藏确定框，能关闭窗口
+                this.setState({
+                    showStatus: 0,
+                })
+            }
+
+        })
     }
 
     // 显示更新的确认框
@@ -155,30 +191,37 @@ class Category extends Component {
     }
 
     // 更新分类
-    updateCategory = async () => {
-        // 0. 准备数据
-        const categoryId = this.category._id;
-        // categoryName这个值来自于组件update-form.js 里面的Input组件
-        // 难点是form怎么获取？？？
-        // form传过来是通过props实现，将子组件的form传递给父组件使用
-        const categoryName = this.form.getFieldValue('categoryName');
-        //清除数据，否则修改了某一个后，再修改其他的会记录上一次的内容
-        // 清除输入数据
-        this.form.resetFields()
+    updateCategory = () => {
+        // 进行表单验证，只有通过了才处理
+        this.form.validateFields(async (err, values) => {
+            if (!err) {
+                // 0. 准备数据
+                const categoryId = this.category._id;
+                // categoryName这个值来自于组件update-form.js 里面的Input组件
+                // 难点是form怎么获取？？？
+                // form传过来是通过props实现，将子组件的form传递给父组件使用
+                // const categoryName = this.form.getFieldValue('categoryName');
+                // values里面就有 categoryName ，使用解构赋值实现
+                const {categoryName} = values;
+                //清除数据，否则修改了某一个后，再修改其他的会记录上一次的内容
+                // 清除输入数据
+                this.form.resetFields()
 
-        //    1.发请求进行更新
-        //    从输入框上获取值
-        const result = await reqUpdateCategory({categoryId, categoryName});
-        if (result.status === 0) {//成功
-            //    2. 重新render()列表，即刷新重新显示列表
-            this.getCategories();
-        } else {//请求失败
-            message.error('更新分类列表失败');
-        }
+                //    1.发请求进行更新
+                //    从输入框上获取值
+                const result = await reqUpdateCategory({categoryId, categoryName});
+                if (result.status === 0) {//成功
+                    //    2. 重新render()列表，即刷新重新显示列表
+                    this.getCategories();
+                } else {//请求失败
+                    message.error('更新分类列表失败');
+                }
 
-        //    3. 隐藏确定框，能关闭窗口
-        this.setState({
-            showStatus: 0,
+                //    3. 隐藏确定框，能关闭窗口
+                this.setState({
+                    showStatus: 0,
+                })
+            }
         })
     }
 
@@ -216,7 +259,7 @@ class Category extends Component {
                 <Icon type='plus'/>
                 添加
             </Button>
-        )
+        );
 
 
         return (
@@ -241,7 +284,11 @@ class Category extends Component {
                         onOk={this.addCategory}
                         onCancel={this.handleCancel}
                     >
-                        <AddForm/>
+                        <AddForm
+                            categories={categories}
+                            parentId={parentId}
+                            setForm={form => this.form = form}
+                        />
                     </Modal>
                     <Modal
                         title="更新分类"
