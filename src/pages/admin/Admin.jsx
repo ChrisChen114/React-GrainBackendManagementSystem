@@ -3,7 +3,6 @@ import memoryUtils from "../../utils/memoryUtils";
 import {Redirect, Route, Switch} from "react-router-dom";
 // 针对布局，引入的组件
 import {Layout} from 'antd';
-import leftNav from "../../components/left-nav/left-nav";
 import Header from "../../components/header/header";
 import LeftNav from "../../components/left-nav/left-nav";
 import Home from "../home/home";
@@ -37,7 +36,7 @@ class Admin extends Component {
                 </Sider>
                 <Layout>
                     <Header>Header</Header>
-                    <Content style={{backgroundColor: '#fff'}}>
+                    <Content style={{margin:20,backgroundColor: '#fff'}}>
                         {/*  二级子路由  */}
                         <Switch>
                             <Route path='/home' component={Home}/>
