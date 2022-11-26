@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
 import {
-    Card, Select, Input, Button, Icon, Table,
+    Card, Select, Input, Button, Icon, Table, message,
 } from "antd";
 import LinkButton from "../../components/link-button";
+import {reqProducts, reqSearchProducts, reqUpdateProductStatus} from "../../api";
+import {PAGE_SIZE} from "../../utils/constants";
 
 const Option = Select.Option;
 
@@ -12,38 +14,13 @@ const Option = Select.Option;
 class ProductHome extends Component {
 
     state = {
-        products: [
-            {
-                "status": 1,
-                "imgs": [
-                    "image-1559402396338.jpg"
-                ],
-                "_id": "5ca9e05db49ef916541160cd",
-                "name": "联想ThinkPad 翼4809",
-                "desc": "年度重量级新品，X390、T490全新登场 更加轻薄机身设计9",
-                "price": 65999,
-                "pCategoryId": "5ca9d6c0b49ef916541160bb",
-                "categoryId": "5ca9db9fb49ef916541160cc",
-                "detail": "<p><span style=\"color: rgb(228,57,60);background-color: rgb(255,255,255);font-size: 12px;\">想你所需，超你所想！精致外观，轻薄便携带光驱，内置正版office杜绝盗版死机，全国联保两年！</span> 222</p>\n<p><span style=\"color: rgb(102,102,102);background-color: rgb(255,255,255);font-size: 16px;\">联想（Lenovo）扬天V110 15.6英寸家用轻薄便携商务办公手提笔记本电脑 定制【E2-9010/4G/128G固态】 2G独显 内置</span></p>\n<p><span style=\"color: rgb(102,102,102);background-color: rgb(255,255,255);font-size: 16px;\">99999</span></p>\n",
-                "__v": 0
-            },
-            {
-                "status": 2,
-                "imgs": [
-                    "image-1554638240202.jpg"
-                ],
-                "_id": "5ca9e5bbb49ef916541160d0",
-                "name": "美的(Midea) 213升-BCD-213TM",
-                "desc": "爆款直降!大容量三口之家优选! *节能养鲜,自动低温补偿,36分贝静音呵护",
-                "price": 1388,
-                "pCategoryId": "5ca9d695b49ef916541160ba",
-                "categoryId": "5ca9d9cfb49ef916541160c4",
-                "detail": "<p style=\"text-align:start;\"><span style=\"color: rgb(102,102,102);background-color: rgb(255,255,255);font-size: 16px;font-family: Arial, \"microsoft yahei;\">美的(Midea) 213升 节能静音家用三门小冰箱 阳光米 BCD-213TM(E)</span></p>\n<p><span style=\"color: rgb(228,57,60);background-color: rgb(255,255,255);font-size: 12px;font-family: tahoma, arial, \"Microsoft YaHei\", \"Hiragino Sans GB\", u5b8bu4f53, sans-serif;\">【4.8美的大牌秒杀日】爆款直降!大容量三口之家优选! *节能养鲜,自动低温补偿,36分贝静音呵护! *每天不到一度电,省钱又省心!</span>&nbsp;</p>\n",
-                "__v": 0
-            },
-        ],// 商品的数组
-
+        total: 0,// 商品的总数量
+        products: [],// 商品的数组
+        loading: false,//是否正在加载中
+        searchName: '',//搜索的关键字
+        searchType: 'productName',//根据哪个字段搜索
     }
+
 
     // 初始化table的列的数组
     initColumns = () => {
@@ -65,12 +42,19 @@ class ProductHome extends Component {
             {
                 width: 100,//这两列设置固定宽度 100px
                 title: '状态',
-                dataIndex: 'status',
-                render: (status) => {
+                // dataIndex: 'status',
+                render: (product) => {
+                    const {status, _id} = product;
+                    const newStatus = status === 1 ? 2 : 1
                     return (
                         <span>
-                            <Button type='primary'>下架</Button>
-                            <span>在售</span>
+                            <Button
+                                type='primary'
+                                onClick={() => this.updateStatus(_id, newStatus)}
+                            >
+                                {status === 1 ? '下架' : '上架'}
+                            </Button>
+                            <span>{status === 1 ? '在售' : '已下架'}</span>
                         </span>
                     )
                 }
@@ -78,11 +62,14 @@ class ProductHome extends Component {
             {
                 width: 100,//这两列设置固定宽度 100px
                 title: '操作',
-                dataIndex: 'status',
                 render: (product) => {
                     return (
+                        // react-router 中 history.push: push(path, [state]) - (function 类型) 在 history 堆栈添加一个新条目
+                        // 就是说push 是可以在接收一个state的
                         <span>
-                            <LinkButton>详情</LinkButton>
+                            {/* 将product对象,使用state传递给目标路由组件. 这样product就是state的一个属性了，可以在父组件home中使用 */}
+                            <LinkButton
+                                onClick={() => this.props.history.push('/product/detail', {product})}>详情</LinkButton>
                             <LinkButton>修改</LinkButton>
                         </span>
                     )
@@ -91,27 +78,79 @@ class ProductHome extends Component {
         ];
     }
 
+    // 获取指定页码的列表数据显示
+    getProducts = async (pageNum) => {
+        this.pageNum = pageNum;//获取当前页，供其他地方用
+        this.setState({loading: true});//显示loading
+
+        const {searchName, searchType} = this.state;
+        // 如果搜索关键字有值，说明我们要做搜索分页
+        let result;
+        if (searchName) {
+            result = await reqSearchProducts({pageNum, pageSize: PAGE_SIZE, searchName, searchType});
+        } else {// 一般分页请求
+            result = await reqProducts(pageNum, PAGE_SIZE);
+        }
+
+        this.setState({loading: false});//隐藏loading
+        if (result.status === 0) {//成功读取了数据
+            // 取出分页数据，更新状态，显示分页列表
+            const {total, list} = result.data;
+            // 更新状态
+            this.setState({
+                total,
+                products: list,
+            })
+        }
+    }
+
+    // 更新商品上/下架状态
+    updateStatus = async (productId,status) => {
+        const result = await reqUpdateProductStatus(productId,status);
+        if (result.status===0){
+            message.success('更新商品成功');
+            const result1 = await this.getProducts(this.pageNum);
+        }
+    }
+
 
     // 将要挂在的时候
     componentWillMount() {
-        this.initColumns()
+        this.initColumns();
 
+    }
+
+    componentDidMount() {
+        this.getProducts(1);
     }
 
     render() {
 
         // 取出状态数据
-        const {products} = this.state;
-
+        const {products, total, loading, searchName, searchType} = this.state;
 
         const title = (
             <span>
-                <Select value='1' style={{width: '150px'}}>
-                    <Option value='1'>按名称搜索</Option>
-                    <Option value='2'>按描述搜索</Option>
+                {/* Select的onChange事件，查antd的用法
+                    绑定onChange监听 */}
+                <Select
+                    value={searchType}
+                    style={{width: '150px'}}
+
+                    onChange={value => this.setState({searchType: value})}
+                >
+                    <Option value='productName'>按名称搜索</Option>
+                    <Option value='productDesc'>按描述搜索</Option>
                 </Select>
-                <Input placeholder='关键字' style={{width: '150px', margin: '0 15px'}}/>
-                <Button type='primary'>搜索</Button>
+                {/* Input的onChange事件--输入框内容变化时的回调，传入event，查antd的用法，
+                    绑定onChange监听 */}
+                <Input
+                    placeholder='关键字'
+                    style={{width: '150px', margin: '0 15px'}}
+                    value={searchName}
+                    onChange={event => this.setState({searchName: event.target.value})}
+                />
+                <Button type='primary' onClick={() => this.getProducts(1)}>搜索</Button>
             </span>
         )
         const extra = (
@@ -126,8 +165,15 @@ class ProductHome extends Component {
                 <Table
                     bordered
                     rowKey='_id'
+                    loading={loading}
                     dataSource={products}
                     columns={this.columns}
+                    pagination={{
+                        total,
+                        defaultPageSize: PAGE_SIZE,
+                        showQuickJumper: true,
+                        onChange: this.getProducts
+                    }}
                 />
             </Card>
         );
