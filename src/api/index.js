@@ -54,6 +54,34 @@ export const reqUpdateCategory = ({categoryId, categoryName}) => ajax(BASE + '/m
     categoryName
 }, 'POST');
 
+// 获取一个分类
+export const reqCategory = (categoryId)=>ajax(BASE + '/manage/category/info', { categoryId});
+
+// 获取商品分页列表
+// 针对get请求，reqProducts = (pageNum, pageSize)，注意不能写成({pageNum, pageSize})
+export const reqProducts = (pageNum, pageSize) => ajax(BASE + '/manage/product/list', {
+    pageNum, pageSize
+});
+
+// 对商品进行上架/下架处理  更新商品的状态
+export const reqUpdateProductStatus = (productId, status) => ajax(BASE + '/manage/product/updateStatus', {
+    productId,
+    status
+}, 'POST');
+
+
+
+/*
+* 根据ID/Name搜索产品分页列表
+* searchType: 搜索的类型，productName/productDesc
+* 注意：使用一个查询函数，解决两种搜索请求
+* */
+export const reqSearchProducts = ({pageNum, pageSize, searchName,searchType}) => ajax(BASE + '/manage/product/search', {
+    pageNum,
+    pageSize,
+    [searchType]: searchName,
+});
+
 
 /*
 * jsonp请求的接口请求函数
