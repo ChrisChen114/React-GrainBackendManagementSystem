@@ -10,7 +10,7 @@ const munuList = [
         icon: 'appstore',
         children: [ // 子菜单列表
             {
-                title: '类品管理',
+                title: '品类管理',
                 key: '/category',
                 icon: 'bars',
             },
