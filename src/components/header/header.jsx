@@ -36,6 +36,8 @@ class Header extends Component {
         //    更新状态
         this.setState({dayPictureUrl, weather});
     }
+
+    //
     getTitle = () => {
         // 得到当前请求路径
         const path = this.props.location.pathname;
@@ -47,7 +49,8 @@ class Header extends Component {
                 title = item.title;
             } else if (item.children) {
                 // 在所有的子item中查找匹配的
-                const cItem = item.children.find(cItem => cItem.key === path);
+                // path.indexOf(cItem.key)===0 解决在商品管理里丢失title的问题
+                const cItem = item.children.find(cItem =>  path.indexOf(cItem.key)===0);
                 // 如果有值才说明有匹配的
                 if (cItem) {
                     title = cItem.title;
