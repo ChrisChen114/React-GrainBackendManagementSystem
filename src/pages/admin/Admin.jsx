@@ -29,8 +29,8 @@ class Admin extends Component {
         }
         return (
             // style={{}},第一个{}的作用是说明内部将要写js代码，内部的{}代表js对象
-            // 将高度撑起来
-            <Layout style={{height: '100%'}}>
+            // 将高度撑起来,不使用Height，而是使用minHeight（可变的）
+            <Layout style={{minHeight: '100%'}}>
                 <Sider>
                     <LeftNav/>
                 </Sider>
