@@ -8,7 +8,7 @@ import {
     Modal
 } from "antd";
 import LinkButton from "../../components/link-button";
-import {reqCategories, reqUpdateCategory, reqAddCategory} from '../../api/index'
+import {reqCategorys, reqUpdateCategory, reqAddCategory} from '../../api/index'
 import AddForm from "./add-form";
 import UpdateForm from "./update-form";
 
@@ -64,7 +64,7 @@ class Category extends Component {
         parentId = parentId || this.state.parentId;
 
         // 发异步ajax请求，获取数据，返回的是Promise对象
-        const result = await reqCategories(parentId);
+        const result = await reqCategorys(parentId);
         // 在请求完成后，隐藏loading
         this.setState({loading: false});
         if (result.status === 0) {//请求成功
