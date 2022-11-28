@@ -10,9 +10,10 @@ import {
 } from 'antd'
 
 import PicturesWall from './pictures-wall'
+import RichTextEditor from "./rich-text-editor";
 // import RichTextEditor from './rich-text-editor'
 import LinkButton from '../../components/link-button'
-import {reqCategorys, reqAddOrUpdateProduct} from '../../api'
+import {reqCategories, reqAddOrUpdateProduct} from '../../api'
 
 
 const {Item} = Form
@@ -46,8 +47,7 @@ class ProductAddUpdate extends PureComponent {
         // 如果是一个二级分类商品的更新
         const {isUpdate, product} = this
         const {pCategoryId} = product
-        if (isUpdate && pCategoryId !== '0')
-        {
+        if (isUpdate && pCategoryId !== '0') {
             // 获取对应的二级分类列表
             const subCategorys = await this.getCategorys(pCategoryId)
             // 生成二级下拉列表的options
@@ -75,7 +75,7 @@ class ProductAddUpdate extends PureComponent {
     async函数的返回值是一个新的promise对象, promise的结果和值由async的结果来决定
      */
     getCategorys = async (parentId) => {
-        const result = await reqCategorys(parentId)   // {status: 0, data: categorys}
+        const result = await reqCategories(parentId)   // {status: 0, data: categorys}
         if (result.status === 0) {
             const categorys = result.data
             // 如果是一级分类列表
@@ -163,43 +163,44 @@ class ProductAddUpdate extends PureComponent {
         })
     }
 
-    submit = () => {
+    submit = async () => {
         // 进行表单验证, 如果通过了, 才发送请求
         this.props.form.validateFields(async (error, values) => {
             if (!error) {
+
+
+                // 1. 收集数据，并封装成product对象
+                const {name, desc, price, categoryIds} = values;
+                let pCategoryId, categoryId;
+                if (categoryIds.length === 1) {
+                    pCategoryId = '0';
+                    categoryId = categoryIds[0];
+                } else {
+                    pCategoryId = categoryIds[0];
+                    categoryId = categoryIds[1];
+                }
                 const imgs = this.pw.current.getImgs();
-                console.log(imgs)
+                const detail = this.editor.current.getDetail();//从富文本编辑器取内容
+
+                const product = {name, desc, price, imgs, detail,pCategoryId,categoryId};
+                // 如果是更新，需要添加_id
+                if (this.isUpdate) {
+                    product._id = this.product._id;
+                }
+
+                // 2. 调用接口请求函数去添加/更新
+                const result = await reqAddOrUpdateProduct(product);
+
+                //3. 根据结果提示
+                if (result.status === 0) {
+                    message.success(`${this.isUpdate? '更新':'添加'}商品成功！`);
+                    this.props.history.goBack();
+                }else{
+                    message.error(`${this.isUpdate? '更新':'添加'}商品失败！`)
+                }
+
+                console.log(imgs, detail)
                 alert('success')
-                // 1. 收集数据, 并封装成product对象
-                // const {name, desc, price, categoryIds} = values
-                // let pCategoryId, categoryId
-                // if (categoryIds.length===1) {
-                //     pCategoryId = '0'
-                //     categoryId = categoryIds[0]
-                // } else {
-                //     pCategoryId = categoryIds[0]
-                //     categoryId = categoryIds[1]
-                // }
-                // const imgs = this.pw.current.getImgs()
-                // const detail = this.editor.current.getDetail()
-                //
-                // const product = {name, desc, price, imgs, detail, pCategoryId, categoryId}
-                //
-                // // 如果是更新, 需要添加_id
-                // if(this.isUpdate) {
-                //     product._id = this.product._id
-                // }
-                //
-                // // 2. 调用接口请求函数去添加/更新
-                // const result = await reqAddOrUpdateProduct(product)
-                //
-                // // 3. 根据结果提示
-                // if (result.status===0) {
-                //     message.success(`${this.isUpdate ? '更新' : '添加'}商品成功!`)
-                //     this.props.history.goBack()
-                // } else {
-                //     message.error(`${this.isUpdate ? '更新' : '添加'}商品失败!`)
-                // }
             }
         })
     }
@@ -309,8 +310,11 @@ class ProductAddUpdate extends PureComponent {
                     <Item label="商品图片">
                         <PicturesWall ref={this.pw} imgs={imgs}/>
                     </Item>
-                    <Item label="商品详情">
-                        <div>商品详情</div>
+                    {/* 针对富文本的，需要单独指定 */}
+                    {/*labelCol: {span: 2},  // 左侧label的宽度*/}
+                    {/*wrapperCol: {span: 8}, // 右侧包裹的宽度*/}
+                    <Item label="商品详情" labelCol={{span: 2}} wrapperCol={{span: 20}}>
+                        <RichTextEditor ref={this.editor} detail={detail}/>
                     </Item>
                     <Item>
                         <Button type='primary' onClick={this.submit}>提交</Button>
