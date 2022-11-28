@@ -44,28 +44,25 @@ class ProductAddUpdate extends PureComponent {
         }))
 
         // 如果是一个二级分类商品的更新
-        // const {isUpdate, product} = this
-        // const {pCategoryId} = product
-        // if (isUpdate && pCategoryId !== '0')
-        // {
-        //     // 获取对应的二级分类列表
-        //     const subCategorys = await this.getCategorys(pCategoryId)
-        //     // 生成二级下拉列表的options
-        //     const childOptions = subCategorys.map(c => ({
-        //         value: c._id,
-        //         label: c.name,
-        //         isLeaf: true
-        //     }))
-        //
-        //     // 找到当前商品对应的一级option对象
-        //     const targetOption = options.find(option => option.value === pCategoryId)
-        //
-        //     // 关联对应的一级option上
-        //     targetOption.children = childOptions
-        //     // targetOption.loading = false
-        //
-        // }
+        const {isUpdate, product} = this
+        const {pCategoryId} = product
+        if (isUpdate && pCategoryId !== '0')
+        {
+            // 获取对应的二级分类列表
+            const subCategorys = await this.getCategorys(pCategoryId)
+            // 生成二级下拉列表的options
+            const childOptions = subCategorys.map(c => ({
+                value: c._id,
+                label: c.name,
+                isLeaf: true
+            }))
 
+            // 找到当前商品对应的一级option对象
+            const targetOption = options.find(option => option.value === pCategoryId)
+
+            // 关联对应的一级option上
+            targetOption.children = childOptions
+        }
 
         // 更新options状态
         this.setState({
