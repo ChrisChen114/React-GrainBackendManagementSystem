@@ -54,6 +54,7 @@ class ProductHome extends Component {
                             >
                                 {status === 1 ? '下架' : '上架'}
                             </Button>
+                            {/* 1在售，2已下架*/}
                             <span>{status === 1 ? '在售' : '已下架'}</span>
                         </span>
                     )
@@ -70,7 +71,8 @@ class ProductHome extends Component {
                             {/* 将product对象,使用state传递给目标路由组件. 这样product就是state的一个属性了，可以在父组件home中使用 */}
                             <LinkButton
                                 onClick={() => this.props.history.push('/product/detail', {product})}>详情</LinkButton>
-                            <LinkButton>修改</LinkButton>
+                            <LinkButton
+                                onClick={() => this.props.history.push('/product/addupdate', product)}>修改</LinkButton>
                         </span>
                     )
                 }
@@ -105,9 +107,9 @@ class ProductHome extends Component {
     }
 
     // 更新商品上/下架状态
-    updateStatus = async (productId,status) => {
-        const result = await reqUpdateProductStatus(productId,status);
-        if (result.status===0){
+    updateStatus = async (productId, status) => {
+        const result = await reqUpdateProductStatus(productId, status);
+        if (result.status === 0) {
             message.success('更新商品成功');
             const result1 = await this.getProducts(this.pageNum);
         }
@@ -132,7 +134,8 @@ class ProductHome extends Component {
         const title = (
             <span>
                 {/* Select的onChange事件，查antd的用法
-                    绑定onChange监听 */}
+                    绑定onChange监听
+                    这是一个受控组件：实时获取状态，通过onChange和setState实现 */}
                 <Select
                     value={searchType}
                     style={{width: '150px'}}
@@ -154,7 +157,7 @@ class ProductHome extends Component {
             </span>
         )
         const extra = (
-            <Button type='primary'>
+            <Button type='primary' onClick={() => this.props.history.push('/product/addupdate')}>
                 <Icon type='plus'/>
                 添加商品
             </Button>

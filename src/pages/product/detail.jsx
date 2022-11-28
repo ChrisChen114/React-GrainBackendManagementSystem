@@ -100,8 +100,8 @@ class ProductDetail extends Component {
                                     <img
                                         key={img}
                                         className='product-img'
-                                        // src={BASE_IMG_URL + img} //后面记得改
-                                        src={logo}
+                                        src={BASE_IMG_URL + img} //后面记得改
+                                        // src={logo}
                                         alt='img'
                                     />
                                 ))
