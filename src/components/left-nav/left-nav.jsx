@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 // 非路由组件想拥有history，location，match属性，可以通过引入withRouter获取
 // withRouter是一个高阶组件
-import {Link,withRouter} from "react-router-dom";
+import {Link, withRouter} from "react-router-dom";
 import {Menu, Icon} from 'antd';
 import logo from '../../assets/images/logo.png'
 // 默认暴露的，可以写任意名字；
@@ -85,9 +85,11 @@ class LeftNav extends Component {
                 ))
             } else {
                 // 查找一个与当前请求路径匹配的子Item
-                const cItem = item.children.find(cItem=> cItem.key===path);
+                // 解决不选中和不展开的bug，针对的是商品管理. 视频68
+                // 原来写法是cItem.key===path，改为path.indexOf(cItem.key)===0)
+                const cItem = item.children.find(cItem =>path.indexOf(cItem.key)===0);
                 // 如果存在，说明当前item的子列表需要打开
-                if (cItem){
+                if (cItem) {
                     this.openKey = item.key;
                 }
 
@@ -127,8 +129,12 @@ class LeftNav extends Component {
         // 得到当前请求的路由路径
         // 直接这样用，报错Cannot read properties of undefined (reading 'pathname')
         // 原因是这个left-nav不是路由组件
-        const path = this.props.location.pathname;
-        // 得到需要打开菜单想的key
+        let path = this.props.location.pathname;
+        // 解决不选中和不展开的bug，针对的是商品管理. 视频68
+        if (path.indexOf('/product') === 0) {// 当前请求的是商品或其子路由界面
+            path = '/product';
+        }
+        // 得到需要打开菜单项的key
         const openKey = this.openKey;
 
         return (
