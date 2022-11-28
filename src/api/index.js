@@ -40,7 +40,7 @@ export const reqLogin = (username, password) => ajax(BASE + '/login', {username,
 export const reqAddUser = (user) => ajax(BASE + '/manage/user/add', user, 'POST');
 
 // 获取一级/二级分类列表  默认是GET，可以不写
-export const reqCategorys = (parentId) => ajax(BASE + '/manage/category/list', {parentId});
+export const reqCategories = (parentId) => ajax(BASE + '/manage/category/list', {parentId});
 
 // 添加分类        (parentId,categoryName)，普通的传参写法
 export const reqAddCategory = (parentId, categoryName) => ajax(BASE + '/manage/category/add', {
@@ -55,7 +55,7 @@ export const reqUpdateCategory = ({categoryId, categoryName}) => ajax(BASE + '/m
 }, 'POST');
 
 // 获取一个分类
-export const reqCategory = (categoryId)=>ajax(BASE + '/manage/category/info', { categoryId});
+export const reqCategory = (categoryId) => ajax(BASE + '/manage/category/info', {categoryId});
 
 // 获取商品分页列表
 // 针对get请求，reqProducts = (pageNum, pageSize)，注意不能写成({pageNum, pageSize})
@@ -69,18 +69,18 @@ export const reqUpdateProductStatus = (productId, status) => ajax(BASE + '/manag
     status
 }, 'POST');
 
-// 添加/修改商品
-export const reqAddOrUpdateProduct = (product) => ajax(BASE + '/manage/product/' + ( product._id?'update':'add'), product, 'POST')
-
-
-
 /*
 * 根据ID/Name搜索产品分页列表
 * searchType: 搜索的类型，productName/productDesc
 * 注意：使用一个查询函数，解决两种搜索请求
 * [searchType]: 这个写法很特别，值只能是这两种 productName/productDesc
 * */
-export const reqSearchProducts = ({pageNum, pageSize, searchName,searchType}) => ajax(BASE + '/manage/product/search', {
+export const reqSearchProducts = ({
+                                      pageNum,
+                                      pageSize,
+                                      searchName,
+                                      searchType
+                                  }) => ajax(BASE + '/manage/product/search', {
     pageNum,
     pageSize,
     [searchType]: searchName,
@@ -89,7 +89,14 @@ export const reqSearchProducts = ({pageNum, pageSize, searchName,searchType}) =>
 /*
 * 删除图片
 * */
-export const reqDeleteImg = (name)=>ajax(BASE+'/manage/img/delete',{name},'POST')
+export const reqDeleteImg = (name) => ajax(BASE + '/manage/img/delete', {name}, 'POST')
+
+/*
+* 添加/修改商品
+* 因为参数较多，传一个对象product比较合适
+* product._id ?   ==>如果有 _id ,肯定是更新商品
+* */
+export const reqAddOrUpdateProduct = (product) => ajax(BASE + '/manage/product/' + (product._id ? 'update' : 'add'), product, 'POST')
 
 
 /*
