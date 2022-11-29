@@ -72,7 +72,10 @@ class Category extends Component {
             const categories = result.data;
             if (parentId === '0') {
                 //    更新一级分类状态
+                // 这里为什么能更新，因为实在await之后执行，其实实在Promise里执行，
+                // 其它异步回调中: 同步   =>计时器回调，原生事件监听回调，promise回调等
                 this.setState({categories});//简写形式
+
             } else {
                 //    更新二级分类状态
                 this.setState({subCategories: categories});
@@ -83,6 +86,7 @@ class Category extends Component {
     }
 
     // 显示指定一级分类对象的二级子列表
+    // 这是一个react事件回调函数，是异步更新
     showSubCategories = async (category) => {
         //    先更新状态
         // this.setState({
