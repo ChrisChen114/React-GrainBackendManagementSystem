@@ -36,7 +36,7 @@ const BASE = ''
 // 箭头函数，可以写成一行等，更简洁
 export const reqLogin = (username, password) => ajax(BASE + '/login', {username, password}, 'POST');
 
-// 添加用户
+// 添加用户 （最后与update合并了，）
 export const reqAddUser = (user) => ajax(BASE + '/manage/user/add', user, 'POST');
 
 // 获取一级/二级分类列表  默认是GET，可以不写
@@ -113,8 +113,20 @@ export const reqAddRole = (roleName)=>ajax(BASE+'/manage/role/add', {roleName},'
 * */
 export const reqUpdateRole = (role)=>ajax(BASE+'/manage/role/update', role,'POST')
 
+/*
+* 获取所有用户的列表
+* */
+export const reqUsers = ()=>ajax(BASE+'/manage/user/list')
 
+/*
+* 删除指定用户
+* */
+export const reqDeleteUser = (userId)=>ajax(BASE+'/manage/user/delete', {userId},'POST')
 
+/*
+* 添加用户
+* */
+export const reqAddOrUpdateUser = (user)=>ajax(BASE+'/manage/user/'+(user._id?'update':'add'), user,'POST')
 
 /*
 * jsonp请求的接口请求函数
