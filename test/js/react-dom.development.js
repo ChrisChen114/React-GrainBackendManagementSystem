@@ -7,13 +7,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-'use strict';
+
 
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('react')) :
 	typeof define === 'function' && define.amd ? define(['react'], factory) :
 	(global.ReactDOM = factory(global.React));
-}(this, (function (React) { 'use strict';
+}(this, (function (React) { 
 
 /**
  * Use invariant() to assert state which your program assumes to be true.
@@ -3272,7 +3272,7 @@ var enableStableConcurrentModeAPIs = false;
 
 var warnAboutShorthandPropertyCollision = false;
 
-// TODO: direct imports like some-package/src/* are bad. Fix me.
+// TODO: direct imports like some-package/src_app/* are bad. Fix me.
 var didWarnValueDefaultValue = false;
 var didWarnCheckedDefaultChecked = false;
 var didWarnControlledToUncontrolled = false;
@@ -5440,7 +5440,7 @@ function getActiveElementDeep() {
   var element = getActiveElement();
   while (element instanceof win.HTMLIFrameElement) {
     // Accessing the contentDocument of a HTMLIframeElement can cause the browser
-    // to throw, e.g. if it has a cross-origin src attribute
+    // to throw, e.g. if it has a cross-origin src_app attribute
     try {
       win = element.contentDocument.defaultView;
     } catch (e) {
@@ -5820,7 +5820,7 @@ function getHostProps$1(element, props) {
   return hostProps;
 }
 
-// TODO: direct imports like some-package/src/* are bad. Fix me.
+// TODO: direct imports like some-package/src_app/* are bad. Fix me.
 var didWarnValueDefaultValue$1 = void 0;
 
 {
@@ -6662,7 +6662,7 @@ function isCustomComponent(tagName, props) {
     case 'annotation-xml':
     case 'color-profile':
     case 'font-face':
-    case 'font-face-src':
+    case 'font-face-src_app':
     case 'font-face-uri':
     case 'font-face-format':
     case 'font-face-name':
@@ -7469,7 +7469,7 @@ function validateProperties$2(type, props, canUseEventSystem) {
   warnUnknownProperties(type, props, canUseEventSystem);
 }
 
-// TODO: direct imports like some-package/src/* are bad. Fix me.
+// TODO: direct imports like some-package/src_app/* are bad. Fix me.
 var didWarnInvalidHydration = false;
 var didWarnShadyDOM = false;
 
@@ -8410,7 +8410,7 @@ function restoreControlledState$1(domElement, tag, props) {
   }
 }
 
-// TODO: direct imports like some-package/src/* are bad. Fix me.
+// TODO: direct imports like some-package/src_app/* are bad. Fix me.
 var validateDOMNesting = function () {};
 var updatedAncestorInfo = function () {};
 
