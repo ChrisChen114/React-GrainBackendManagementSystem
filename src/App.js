@@ -1,27 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React,{Component} from 'react';
+import {BrowserRouter,Route,Switch} from 'react-router-dom'
+import Login from "./pages/login/Login.jsx";
+import Admin from "./pages/admin/Admin.jsx";
 
-function App() {
-  return(
-    <div className="App">
-    <header className="App-header">
-      <img src={logo} className="App-logo" alt="logo" />
-      <p>
-        Edit <code>src/App.js</code> and save to reload.
-      </p>
-      <a
-        className="App-link"
-        href="https://reactjs.org"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Learn React
-      </a>
-    </header>
-  </div>
-  );
+// 應用的根組件
+class App extends Component{
+    // 写成箭头函数能保证this指针没问题
+    //handleClick（）{}，这种写法下的this指针会出现异常
+    // 所以一般自定义的方法都写成箭头函数的形式
+    // handleClick=()=>{
+    //     // message.info('This is a normal message');
+    //     message.success('This is a success message');
+    // }
+  //  <Button type="primary" onClick={this.handleClick}>Primary</Button>
+  render() {
+    return(
+        <BrowserRouter>
+            {/* 子匹配路由 */}
+            <Switch>
+                <Route path='/login' component={Login}></Route>
+                <Route path='/' component={Admin}></Route>
+            </Switch>
+        </BrowserRouter>
+    )
 
+  }
 }
 
 export default App;

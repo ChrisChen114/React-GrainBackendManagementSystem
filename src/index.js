@@ -1,12 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import storageUtils from "./utils/storageUtils";
+import memoryUtils from "./utils/memoryUtils";
 
-ReactDOM.render(<App />,document.getElementById('root'));
+// 读取local中保存的user，保存到内存中
+// 好处：维持登录与自动登录
+const user = storageUtils.getUser();
+memoryUtils.user = user;
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+ReactDOM.render(<App/>, document.getElementById('root'));
+
