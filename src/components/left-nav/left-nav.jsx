@@ -7,6 +7,7 @@ import logo from '../../assets/images/logo.png'
 // 默认暴露的，可以写任意名字；
 import menuList from '../../config/menuConfig'
 import './left-nav.less'
+import memoryUtils from "../../utils/memoryUtils";
 
 const {SubMenu} = Menu;
 
@@ -16,6 +17,28 @@ const {SubMenu} = Menu;
 * 2. 导航区使用antd里面的
 * */
 class LeftNav extends Component {
+
+    // 判断当前登录用户对item是否有权限
+    hasAuth = (item) => {
+        const {key, isPublic} = item;
+        const menus = memoryUtils.user.role.menus;
+        const username = memoryUtils.user.username;
+        /*
+        * 1. 如果当前用户是admin，直接通过
+        * 2. 如果当前item是公开的
+        * 3. 当前用户有此item的权限：key有没有在menus中
+        * */
+
+        if (username === 'admin' || isPublic || menus.indexOf(key) !== -1) {
+            return true;
+        }else if(item.children){ // 4. 如果当前用户有此item的某个子item的权限
+            // 使用 !! 将其它类型转换成 bool 型
+            // 使用!! 找到了就true，没找到就false
+            return !!item.children.find(child=>menus.indexOf(child.key) !== -1)
+        }
+        return false;
+    }
+
     /*
     * 根据menu的数据数组生成对应的标签数组
     * 使用map，加递归调用
@@ -72,46 +95,51 @@ class LeftNav extends Component {
         const path = this.props.location.pathname;
 
         return menuList.reduce((pre, item) => {
-            // 向pre中添加<Menu.Item>
 
-            if (!item.children) {
-                pre.push((
-                    <Menu.Item key={item.key}>
-                        <Link to={item.key}>
-                            <Icon type={item.icon}/>
-                            <span>{item.title}</span>
-                        </Link>
-                    </Menu.Item>
-                ))
-            } else {
-                // 查找一个与当前请求路径匹配的子Item
-                // 解决不选中和不展开的bug，针对的是商品管理. 视频68
-                // 原来写法是cItem.key===path，改为path.indexOf(cItem.key)===0)
-                const cItem = item.children.find(cItem =>path.indexOf(cItem.key)===0);
-                // 如果存在，说明当前item的子列表需要打开
-                if (cItem) {
-                    this.openKey = item.key;
-                }
+            // 如果当前用户有item对应的权限，才需要显示对应的菜单项  ==> 视频105-菜单权限管理
+            if (this.hasAuth(item)) {
+                // 向pre中添加<Menu.Item>
+                if (!item.children) {
+                    pre.push((
+                        <Menu.Item key={item.key}>
+                            <Link to={item.key}>
+                                <Icon type={item.icon}/>
+                                <span>{item.title}</span>
+                            </Link>
+                        </Menu.Item>
+                    ))
+                } else {
+                    // 查找一个与当前请求路径匹配的子Item
+                    // 解决不选中和不展开的bug，针对的是商品管理. 视频68
+                    // 原来写法是cItem.key===path，改为path.indexOf(cItem.key)===0)
+                    const cItem = item.children.find(cItem => path.indexOf(cItem.key) === 0);
+                    // 如果存在，说明当前item的子列表需要打开
+                    if (cItem) {
+                        this.openKey = item.key;
+                    }
 
 
-                // 向pre中添加<SubMenu>
-                pre.push((
-                    <SubMenu
-                        key={item.key}
-                        title={
-                            <span>
+                    // 向pre中添加<SubMenu>
+                    pre.push((
+                        <SubMenu
+                            key={item.key}
+                            title={
+                                <span>
                             <Icon type={item.icon}/>
                             <span>{item.title}</span>
                         </span>
-                        }
-                    >
-                        {/* 递归调用，提取children的值 */}
-                        {
-                            this.getMenuNodes(item.children)
-                        }
-                    </SubMenu>
-                ))
+                            }
+                        >
+                            {/* 递归调用，提取children的值 */}
+                            {
+                                this.getMenuNodes(item.children)
+                            }
+                        </SubMenu>
+                    ))
+                }
             }
+
+
             // 返回当前pre的结果，作为下一次传入的条件
             return pre;
         }, [])
