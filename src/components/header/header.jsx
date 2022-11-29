@@ -124,7 +124,7 @@ class Header extends Component {
                         <span>{currentTime}</span>
                         <img src='http://api.map.baidu.com/images/weather/day/qing.png' alt='weather'/>
                         {/*因为无法获取，所以写的静态的*/}
-                        {/*<img src_app={dayPictureUrl},alt='weather'/>*/}
+                        {/*<img src={dayPictureUrl},alt='weather'/>*/}
                         {/*<span>{weather}</span>*/}
                         <span>晴</span>
                     </div>
