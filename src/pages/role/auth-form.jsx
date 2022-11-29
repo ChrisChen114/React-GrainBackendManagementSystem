@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import {
     Form,
     Input,
@@ -13,7 +13,7 @@ const {TreeNode} = Tree;
 /*
 * 设置角色权限的form组件
 * */
-class AuthForm extends Component {
+class AuthForm extends PureComponent {
     static propTypes = {
         role: PropTypes.object
     }
