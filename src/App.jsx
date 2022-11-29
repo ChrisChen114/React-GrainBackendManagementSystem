@@ -1,8 +1,11 @@
 import React, {Component} from 'react';
+import PropTypes from "prop-types";
+import {increment,decrement} from './redux/actions'
 
 class App extends Component {
-    state = {
-        count: 0,
+
+    static propTypes = {
+        store: PropTypes.object.isRequired,
     }
 
     constructor(props) {
@@ -12,18 +15,18 @@ class App extends Component {
 
     increment = () => {
         const number = this.numberRef.current.value * 1;
-        this.setState(state => ({count: state.count + number}))
+        this.props.store.dispatch(increment(number))
     }
 
     decrement = () => {
         const number = this.numberRef.current.value * 1;
-        this.setState(state => ({count: state.count - number}))
+        this.props.store.dispatch(decrement(number))
     }
 
     incrementIfOdd = () => {
         const number = this.numberRef.current.value * 1;
-        if (this.state.count % 2 === 1) {
-            this.setState(state => ({count: state.count + number}))
+        if (this.props.store.getState() % 2 === 1) {
+            this.props.store.dispatch(increment(number))
         }
 
     }
@@ -31,13 +34,14 @@ class App extends Component {
     incrementAsync = () => {
         const number = this.numberRef.current.value * 1;
         setTimeout(()=>{
-            this.setState(state => ({count: state.count + number}))
+            this.props.store.dispatch(increment(number))
         },1000)
 
     }
 
     render() {
-        const count = this.state.count;
+        // 从redux获取值
+        const count = this.props.store.getState();
         return (
             <div>
                 <p>click {count} times</p>
