@@ -10,8 +10,9 @@ class Counter extends Component {
 
     static propTypes = {
         count: PropTypes.number.isRequired,
-        increment:PropTypes.func.isRequired,
-        decrement:PropTypes.func.isRequired,
+        increment: PropTypes.func.isRequired,
+        decrement: PropTypes.func.isRequired,
+        incrementAsync: PropTypes.func.isRequired,
     }
 
     constructor(props) {
@@ -40,9 +41,7 @@ class Counter extends Component {
 
     incrementAsync = () => {
         const number = this.numberRef.current.value * 1;
-        setTimeout(()=>{
-            this.props.increment(number)
-        },1000)
+        this.props.incrementAsync(number)
 
     }
 
