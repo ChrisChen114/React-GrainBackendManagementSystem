@@ -10,7 +10,7 @@ import ajax from "./ajax";
 import {message} from "antd";
 
 // const BASE = 'http://localhost:5000'
-const BASE = ''
+const BASE = 'api'
 
 // 默认暴露
 // export default {
