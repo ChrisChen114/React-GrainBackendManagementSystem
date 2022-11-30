@@ -1,18 +1,21 @@
-/*
-* 入口js
-* */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import store from './redux/store'
+import {Provider} from "react-redux";
+
 import App from './App';
+// import storageUtils from "./utils/storageUtils";
+// import memoryUtils from "./utils/memoryUtils";
+import store from './redux/store'
 
-console.log('state',store.getState())
+// 读取local中保存的user，保存到内存中
+// 好处：维持登录与自动登录
+// const user = storageUtils.getUser();
+// memoryUtils.user = user;
 
-ReactDOM.render(<App store={store}/>, document.getElementById('root'));
+ReactDOM.render(
+    (
+        <Provider store={store}>
+            <App/>
+        </Provider>
+    ), document.getElementById('root'));
 
-// 给store绑定状态更新的监听
-store.subscribe(()=>{// store内部的状态数据发生改变时回调
-//    重新渲染App组件标签
-    console.log('state改变了，更新组件')
-    ReactDOM.render(<App store={store}/>, document.getElementById('root'));
-})

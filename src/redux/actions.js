@@ -1,21 +1,67 @@
 /*
-* 包含n个用来创建action的工厂函数(action creator)
+* 包含n个action creator函数的模块
+* 同步action：对象  {type:'xxx',data:数据值}
+* 异步action：函数 dispatch => {}
 * */
-
-import {INCREMENT,DECREMENT} from './action-types'
-
-
-
-// export function increment(number){
-//     return {type:'INCREMENT',data:number}
-// }
-/*
-* 增加的action
-* */
-export const increment = number=>({type:INCREMENT,data:number})
+import {
+    SET_HEAD_TITLE,
+    RECEIVE_USER,
+    SHOW_ERROR_MSG,
+    RESET_USER
+} from "./action-types";
+import {reqLogin} from '../api/index'
+import storageUtils from "../utils/storageUtils";
 
 /*
-* 减少的action
+* 设置头部标题的同步action
 * */
-export const decrement = number=>({type:DECREMENT,data:number})
+export const setHeaderTitle = (headTitle) => ({type: SET_HEAD_TITLE, data: headTitle})
+
+/*
+* 接收用户的同步action
+* */
+export const receiveUser = (user) => (
+    {type: RECEIVE_USER, user}
+)
+
+/*
+* 显示错误信息的同步action
+* */
+export const showErrorMsg = (errorMsg) => (
+    {type: SHOW_ERROR_MSG, errorMsg}
+)
+
+
+/*
+* 登录请求的异步action
+* */
+export const login = (username, password) => {
+    return async dispatch => {
+        //    1. 执行异步ajax请求
+        const result = await reqLogin(username, password)   // {status:0, data:user} {status:1, msg:'xxx'}
+
+        //    2.1 如果成功，分发成功的同步action
+        if (result.status === 0) {
+            const user = result.data
+            //保存在local中
+            storageUtils.saveUser(user)
+            // 分发接收用户的同步action
+            dispatch(receiveUser(user))
+        } else {
+            //    2.2 如果失败，分发失败的同步action
+            const msg = result.msg
+            dispatch(showErrorMsg(msg))
+        }
+    }
+}
+
+/*
+* 退出登录的同步action
+* */
+export const logout = ()=>{
+    // 删除local中的user
+    storageUtils.removeUser()
+    // 返回action对象
+    return {type:RESET_USER}
+}
 
