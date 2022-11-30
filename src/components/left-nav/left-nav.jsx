@@ -2,12 +2,14 @@ import React, {Component} from 'react';
 // 非路由组件想拥有history，location，match属性，可以通过引入withRouter获取
 // withRouter是一个高阶组件
 import {Link, withRouter} from "react-router-dom";
+import {connect} from "react-redux";
 import {Menu, Icon} from 'antd';
 import logo from '../../assets/images/logo.png'
 // 默认暴露的，可以写任意名字；
 import menuList from '../../config/menuConfig'
 import './left-nav.less'
 import memoryUtils from "../../utils/memoryUtils";
+import {setHeaderTitle} from '../../redux/actions'
 
 const {SubMenu} = Menu;
 
@@ -31,10 +33,10 @@ class LeftNav extends Component {
 
         if (username === 'admin' || isPublic || menus.indexOf(key) !== -1) {
             return true;
-        }else if(item.children){ // 4. 如果当前用户有此item的某个子item的权限
+        } else if (item.children) { // 4. 如果当前用户有此item的某个子item的权限
             // 使用 !! 将其它类型转换成 bool 型
             // 使用!! 找到了就true，没找到就false
-            return !!item.children.find(child=>menus.indexOf(child.key) !== -1)
+            return !!item.children.find(child => menus.indexOf(child.key) !== -1)
         }
         return false;
     }
@@ -100,9 +102,15 @@ class LeftNav extends Component {
             if (this.hasAuth(item)) {
                 // 向pre中添加<Menu.Item>
                 if (!item.children) {
+                    // 判断item是否是当前对应的item
+                    if (item.key===path || path.indexOf(item.key)===0){
+                        // 更新redux中的HeaderTitle状态
+                        this.props.setHeaderTitle(item.title)
+                    }
+
                     pre.push((
                         <Menu.Item key={item.key}>
-                            <Link to={item.key}>
+                            <Link to={item.key} onClick={() => this.props.setHeaderTitle(item.title)}>
                                 <Icon type={item.icon}/>
                                 <span>{item.title}</span>
                             </Link>
@@ -181,37 +189,6 @@ class LeftNav extends Component {
                     theme="dark"
                 >
 
-                    {/* 下面这种写法，不够灵活，因此需要进行进一步优化 */}
-                    {/*<Menu.Item key="/home">*/}
-                    {/*    <Link to='/home'>*/}
-                    {/*        <Icon type="pie-chart"/>*/}
-                    {/*        <span>首页</span>*/}
-                    {/*    </Link>*/}
-                    {/*</Menu.Item>*/}
-                    {/*<SubMenu*/}
-                    {/*    key="sub1"*/}
-                    {/*    title={*/}
-                    {/*        <span>*/}
-                    {/*            <Icon type="mail"/>*/}
-                    {/*            <span>商品</span>*/}
-                    {/*        </span>*/}
-                    {/*    }*/}
-                    {/*>*/}
-                    {/*    <Menu.Item key="/category">*/}
-                    {/*        /!* 包一个路由链接 *!/*/}
-                    {/*        <Link to='/category'>*/}
-                    {/*            <Icon type="mail"/>*/}
-                    {/*            <span>品类管理</span>*/}
-                    {/*        </Link>*/}
-                    {/*    </Menu.Item>*/}
-                    {/*    <Menu.Item key="/product">*/}
-                    {/*        <Link to='/product'>*/}
-                    {/*            <Icon type="mail"/>*/}
-                    {/*            <span>商品管理</span>*/}
-                    {/*        </Link>*/}
-                    {/*    </Menu.Item>*/}
-                    {/*</SubMenu>*/}
-
                     {
                         // 两种方法可以解决，map 或 reduce
                         // this.getMenuNodes(menuList)
@@ -228,4 +205,10 @@ class LeftNav extends Component {
 * 包装非路由组件，返回一个新的组件
 * 新的组件向非路由组件传递3个属性：history，location，match
 * */
-export default withRouter(LeftNav);
+/*
+* 使用redux - connect包装一下，然后读取数据
+* */
+export default connect(
+    state => ({}),
+    {setHeaderTitle}
+)(withRouter(LeftNav));

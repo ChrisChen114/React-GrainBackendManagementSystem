@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {withRouter} from "react-router-dom";
+import {connect} from "react-redux";
 import {Modal} from 'antd';
 import './header.less'
 import {formateDate} from "../../utils/dateUtils";
@@ -13,6 +14,8 @@ import LinkButton from "../link-button";
 * 头部Header区的组件
 * */
 class Header extends Component {
+
+
 
     state = {
         currentTime: formateDate(Date.now()),// 当前时间字符串
@@ -106,7 +109,8 @@ class Header extends Component {
         // 从内存中提取用户名
         const username = memoryUtils.user.username;
         // 取出title
-        const title = this.getTitle();
+        // const title = this.getTitle();
+        const title = this.props.headTitle;// 使用redux获取
 
 
         return (
@@ -135,4 +139,9 @@ class Header extends Component {
 }
 
 // 暴露包装后的组件
-export default withRouter(Header);
+export default connect(
+    state=>({
+        headTitle: state.headTitle
+    }),
+    {}
+)(withRouter(Header));
