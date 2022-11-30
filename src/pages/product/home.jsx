@@ -77,6 +77,7 @@ class ProductHome extends Component {
                                 onClick={() => this.showUpdate(product)}>修改</LinkButton>
                             {/*
                                 BrowserRouter的写法，使用HashRouter下面的写法会存在问题，具体解决见上
+                                思路：一种是将product写进memory，还有一种是放进redux中。此处用的是放进memory中
                                 <LinkButton
                                     onClick={() => this.props.history.push('/product/detail', {product})}>详情</LinkButton>
                                 <LinkButton
