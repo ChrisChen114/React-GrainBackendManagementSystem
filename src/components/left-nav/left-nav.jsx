@@ -8,7 +8,7 @@ import logo from '../../assets/images/logo.png'
 // 默认暴露的，可以写任意名字；
 import menuList from '../../config/menuConfig'
 import './left-nav.less'
-import memoryUtils from "../../utils/memoryUtils";
+// import memoryUtils from "../../utils/memoryUtils";
 import {setHeaderTitle} from '../../redux/actions'
 
 const {SubMenu} = Menu;
@@ -23,8 +23,8 @@ class LeftNav extends Component {
     // 判断当前登录用户对item是否有权限
     hasAuth = (item) => {
         const {key, isPublic} = item;
-        const menus = memoryUtils.user.role.menus;
-        const username = memoryUtils.user.username;
+        const menus = this.props.user.role.menus;
+        const username = this.props.user.username;
         /*
         * 1. 如果当前用户是admin，直接通过
         * 2. 如果当前item是公开的
@@ -103,7 +103,7 @@ class LeftNav extends Component {
                 // 向pre中添加<Menu.Item>
                 if (!item.children) {
                     // 判断item是否是当前对应的item
-                    if (item.key===path || path.indexOf(item.key)===0){
+                    if (item.key === path || path.indexOf(item.key) === 0) {
                         // 更新redux中的HeaderTitle状态
                         this.props.setHeaderTitle(item.title)
                     }
@@ -209,6 +209,6 @@ class LeftNav extends Component {
 * 使用redux - connect包装一下，然后读取数据
 * */
 export default connect(
-    state => ({}),
+    state => ({user: state.user}),
     {setHeaderTitle}
 )(withRouter(LeftNav));

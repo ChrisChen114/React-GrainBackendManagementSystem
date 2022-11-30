@@ -4,11 +4,12 @@ import {connect} from "react-redux";
 import {Modal} from 'antd';
 import './header.less'
 import {formateDate} from "../../utils/dateUtils";
-import memoryUtils from "../../utils/memoryUtils";
-import storageUtils from "../../utils/storageUtils";
+// import memoryUtils from "../../utils/memoryUtils";
+// import storageUtils from "../../utils/storageUtils";
 import {reqWeather} from "../../api";
 import menuList from "../../config/menuConfig";
 import LinkButton from "../link-button";
+import {logout} from '../../redux/actions'
 
 /*
 * 头部Header区的组件
@@ -71,13 +72,14 @@ class Header extends Component {
             content: '确定退出吗',
             // onOk(){ //这样写，无法使用this
             onOk: () => {
-                // console.log('OK');
                 //    删除保存的user数据
-                storageUtils.removeUser();
-                memoryUtils.user = {};
+                // storageUtils.removeUser();
+                // memoryUtils.user = {};
+                this.props.logout();// redux
+
                 //    跳转到login
                 //     this.props.history.replace('/login'); //this会有问题
-                this.props.history.replace('/login');
+                // this.props.history.replace('/login');
             }
         })
     }
@@ -107,7 +109,8 @@ class Header extends Component {
         // const {currentTime, dayPictureUrl, weather} = this.state;
         const {currentTime} = this.state;
         // 从内存中提取用户名
-        const username = memoryUtils.user.username;
+        // const username = memoryUtils.user.username;
+        const username = this.props.user.username;// 使用redux
         // 取出title
         // const title = this.getTitle();
         const title = this.props.headTitle;// 使用redux获取
@@ -141,7 +144,8 @@ class Header extends Component {
 // 暴露包装后的组件
 export default connect(
     state=>({
-        headTitle: state.headTitle
+        headTitle: state.headTitle,
+        user:state.user,
     }),
-    {}
+    {logout}
 )(withRouter(Header));

@@ -7,10 +7,16 @@
 * */
 import storageUtils from "../utils/storageUtils";
 import {combineReducers} from "redux";
-import {SET_HEAD_TITLE} from "./action-types";
+import {
+    SET_HEAD_TITLE,
+    RECEIVE_USER,
+    SHOW_ERROR_MSG,
+    RESET_USER
+} from "./action-types";
+
+
 
 const initHeadTitle = '首页'
-
 function headTitle(state = initHeadTitle, action) {
     switch (action.type) {
         case SET_HEAD_TITLE:
@@ -23,13 +29,23 @@ function headTitle(state = initHeadTitle, action) {
 /*
 * 用来管理登录用户的reducer函数
 * */
+// 从local里读取初始值
 const initUser = storageUtils.getUser()
 function user(state = initUser, action) {
     switch (action.type) {
+        case RECEIVE_USER:
+            return action.user
+        case SHOW_ERROR_MSG:
+            const errorMsg = action.errorMsg
+            // state.errorMsg = errorMsg // 不要直接修改原本的状态数据
+            return {...state,errorMsg}
+        case RESET_USER:
+            return {}
         default:
             return state;
     }
 }
+
 
 /*
 * 向外默认暴露的是合并产生的总的reducer函数

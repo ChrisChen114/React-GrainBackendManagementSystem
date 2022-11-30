@@ -6,12 +6,11 @@ import {
     Button,
     message
 } from 'antd';
+import {connect} from "react-redux";
 import './Login.less';
 import logo from '../../assets/images/logo.png'
-import {reqLogin} from '../../api/index'
-import memoryUtils from "../../utils/memoryUtils";
-import storageUtils from "../../utils/storageUtils";
 import {Redirect} from "react-router-dom";
+import {login} from '../../redux/actions'
 
 // 登录的路由组件
 class Login extends Component {
@@ -28,36 +27,32 @@ class Login extends Component {
                 // console.log('提交登陆的ajax请求', values);
                 //请求登陆
                 const {username, password} = values;
-                const result = await reqLogin(username, password);
-                // console.log('请求成功了',response.data);
-                // 请求成功，不一定代表登陆成功，还需要根据data.status的状态进行判断
 
-                // 如果不想写then catch这种回调，可以使用async和await
-                // reqLogin(username,password).then(response=>{
-                //     console.log('成功了',response.data);
-                // }).catch(error=>{
-                //     console.log('失败了---',error);
-                // });// alt + < 回退查看文件
+                // 调用分发异步action的函数 => 发登录的异步请求，有了结果后更新状态
+                this.props.login(username, password)
 
-                // 请求成功，不一定代表登陆成功，还需要根据data.status的状态进行判断
-                // const result = response.data;// {status:0, data:user etc}  {status:1, msg: 'xxx'}
-                if (result.status === 0) {//登陆成功
-                    //    提示登陆成功
-                    message.success('登陆成功');
 
-                    // 登陆成功后，数据里面包含一个user
-                    const user = result.data;
-                    // 将用户信息存储起来，在其他多个地方可以使用
-                    memoryUtils.user = user;// 保存在内存中
-                    storageUtils.saveUser(user);// 保存到local中
-
-                    //    跳转到管理界面
-                    //    为什么不使用push，因为不需要回退回来了
-                    this.props.history.replace('/home');
-                } else {// 登陆失败
-                    // 提示错误信息
-                    message.error(result.msg);
-                }
+                // const result = await reqLogin(username, password);
+                //
+                // // 请求成功，不一定代表登陆成功，还需要根据data.status的状态进行判断
+                // // const result = response.data;// {status:0, data:user etc}  {status:1, msg: 'xxx'}
+                // if (result.status === 0) {//登陆成功
+                //     //    提示登陆成功
+                //     message.success('登陆成功');
+                //
+                //     // 登陆成功后，数据里面包含一个user
+                //     const user = result.data;
+                //     // 将用户信息存储起来，在其他多个地方可以使用
+                //     memoryUtils.user = user;// 保存在内存中
+                //     storageUtils.saveUser(user);// 保存到local中
+                //
+                //     //    跳转到管理界面
+                //     //    为什么不使用push，因为不需要回退回来了
+                //     this.props.history.replace('/home');
+                // } else {// 登陆失败
+                //     // 提示错误信息
+                //     message.error(result.msg);
+                // }
 
             } else {
                 console.log('检验失败！');
@@ -91,10 +86,12 @@ class Login extends Component {
 
     render() {
         // 判断用户是否登陆，如果用户已经登陆，自动跳转到管理界面
-        const user = memoryUtils.user;
+        // const user = memoryUtils.user;
+        const user = this.props.user  // redux
         if(user && user._id){
-            return <Redirect to='/'/>;
+            return <Redirect to='/home'/>;
         }
+        const errorMsg = this.props.user.errorMsg
 
         //得到具有强大功能的form对象
         const form = this.props.form;
@@ -108,6 +105,7 @@ class Login extends Component {
                     <h1>React项目：后台管理系统</h1>
                 </header>
                 <section className='login-content'>
+                    <div className={user.errorMsg? 'error-msg show': 'error-msg'}>{errorMsg}</div>
                     <h2>用户登陆</h2>
                     <Form onSubmit={this.handleSubmit} className="login-form">
                         <Form.Item>
@@ -207,7 +205,10 @@ class Login extends Component {
 // 包装form组件，生成一个新的组件Form(Login)
 // 新组件会向Form组件传递一个强大的对象属性：form
 const WrapLogin = Form.create()(Login)
-export default WrapLogin;
+export default connect(
+    state=>({user:state.user}),
+    {login}
+)(WrapLogin);
 
 /*
 * 1. 前台表单验证

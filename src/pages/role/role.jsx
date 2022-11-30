@@ -5,13 +5,15 @@ import {
     Table,
     Modal, message,
 } from "antd";
+import {connect} from "react-redux";
+import {logout} from "../../redux/actions";
 import {PAGE_SIZE} from "../../utils/constants";
 import {reqRoles, reqAddRole, reqUpdateRole} from "../../api";
 import AddForm from "../role/add-form";
 import AuthForm from "../role/auth-form";
-import memoryUtils from "../../utils/memoryUtils";
+// import memoryUtils from "../../utils/memoryUtils";
 import {formateDate} from "../../utils/dateUtils";
-import storageUtils from "../../utils/storageUtils";
+// import storageUtils from "../../utils/storageUtils";
 
 
 /*
@@ -135,7 +137,7 @@ class Role extends Component {
         const menus = this.auth.current.getMenus();
         role.menus = menus;
         // 解决谁授权的问题
-        role.auth_name = memoryUtils.user.username;
+        role.auth_name = this.props.user.username;
         role.auth_time = Date.now();
 
         //    请求更新
@@ -143,13 +145,15 @@ class Role extends Component {
         if (result.status === 0) {
 
             // 如果当前更新的是自己角色的权限，强制退出
-            if (role._id === memoryUtils.user.role_id){
+            if (role._id === this.props.user.role_id) {
                 //
-                memoryUtils.user = {}
-                storageUtils.removeUser()
-                this.props.history.replace('/login')
+                // memoryUtils.user = {}
+                // storageUtils.removeUser()
+                this.props.logout();//redux
+
+                // this.props.history.replace('/login')
                 message.success('当前用户角色权限修改了，请重新登录');
-            }else{
+            } else {
                 message.success('设置角色权限成功');
                 // this.getRoles();// 这种是最简单的方式
                 this.setState({//这种就是理解上费劲一些
@@ -197,7 +201,7 @@ class Role extends Component {
 
                         type: 'radio',
                         selectedRowKeys: [role._id],
-                        onSelect:(role)=>{
+                        onSelect: (role) => {
                             this.setState({// 选择某个radio的时回调
                                 role
                             })
@@ -234,4 +238,9 @@ class Role extends Component {
     }
 }
 
-export default Role;
+export default connect(
+    state => ({
+        user: state.user
+    }),
+    {logout}
+)(Role);

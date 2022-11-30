@@ -9,7 +9,7 @@ import UserForm from "./user-form";
 import {formateDate} from "../../utils/dateUtils";
 import LinkButton from "../../components/link-button";
 import {PAGE_SIZE} from "../../utils/constants";
-import {reqAddOrUpdateUser, reqAddUpdateUser, reqDeleteUser, reqUsers} from '../../api/index'
+import {reqAddOrUpdateUser, reqDeleteUser, reqUsers} from '../../api/index'
 
 /*
 * 用户路由

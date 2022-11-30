@@ -28,12 +28,36 @@
   }
 
   .login-content {
+    position: relative;
     width: 400px;
     height: 300px;
     background-color: #fff;
     // margin设置外边距
     margin: 50px auto;
     padding: 20px 40px; //增加内边距，这样只用改一次。如果给h2和输入框部分增加padding，要设置两边
+
+    .error-msg {
+      visibility: hidden;
+      position: absolute;
+      top: 0;
+      left: 0;
+      text-align: center;
+      height: 30px;
+      width: 100%;
+      background: #f60c1a;
+      color: #ffffff;
+      font-size: 16px;
+      transform: translateY(-30px);
+      transition: all .3s;
+
+      // & 表示在同一个标签里  show类名：可能有，也可能没有
+      // user.errorMsg? 'error-msg show': 'error-msg'        这样的一个形式
+      &.show{
+        visibility: visible;
+        transform: translateY(0);
+      }
+    }
+
     h2 {
       text-align: center; // 水平居中
       font-size: 30px;
