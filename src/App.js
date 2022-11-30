@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import {BrowserRouter,Route,Switch} from 'react-router-dom'
+import {BrowserRouter,HashRouter,Route,Switch} from 'react-router-dom'
 import Login from "./pages/login/Login.jsx";
 import Admin from "./pages/admin/Admin.jsx";
 
@@ -15,13 +15,14 @@ class App extends Component{
   //  <Button type="primary" onClick={this.handleClick}>Primary</Button>
   render() {
     return(
-        <BrowserRouter>
+        <HashRouter>
+            {/*<BrowserRouter>      不带#号的*/}
             {/* 子匹配路由 */}
             <Switch>
                 <Route path='/login' component={Login}></Route>
                 <Route path='/' component={Admin}></Route>
             </Switch>
-        </BrowserRouter>
+        </HashRouter>
     )
 
   }
