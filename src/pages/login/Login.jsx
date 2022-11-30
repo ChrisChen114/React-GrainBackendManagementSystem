@@ -53,7 +53,7 @@ class Login extends Component {
 
                     //    跳转到管理界面
                     //    为什么不使用push，因为不需要回退回来了
-                    this.props.history.replace('/');
+                    this.props.history.replace('/home');
                 } else {// 登陆失败
                     // 提示错误信息
                     message.error(result.msg);
