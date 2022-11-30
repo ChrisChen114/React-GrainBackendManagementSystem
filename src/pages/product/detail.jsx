@@ -8,6 +8,7 @@ import logo from '../../assets/images/logo.png'
 import LinkButton from "../../components/link-button";
 import {BASE_IMG_URL} from '../../utils/constants';
 import {reqCategory} from '../../api/index'
+import MemoryUtils from "../../utils/memoryUtils";
 
 
 const Item = List.Item;
@@ -28,7 +29,8 @@ class ProductDetail extends Component {
         // 这里发请求
         // 得到当前商品的分类id
         // categoryId：当前分类id；pCategoryId：父分类id
-        const {pCategoryId, categoryId} = this.props.location.state.product;
+        // const {pCategoryId, categoryId} = this.props.location.state.product;
+        const {pCategoryId, categoryId} = MemoryUtils.product;// 解决HashRouter问题
         if (pCategoryId === 0) {// 一级分类下的商品
             const result = await reqCategory(categoryId);
             const cName1 = result.data.name;
@@ -52,10 +54,17 @@ class ProductDetail extends Component {
 
     }
 
+    // 在卸载之前，清除保存的数据
+    componentWillUnmount() {
+        MemoryUtils.product = {}
+    }
+
     render() {
 
         // 读取携带过来的状态数据
-        const {name, desc, price, detail, imgs} = this.props.location.state.product;
+        // const {name, desc, price, detail, imgs} = this.props.location.state.product;
+        const {name, desc, price, detail, imgs} = MemoryUtils.product;
+
         const {cName1, cName2} = this.state;
 
         const title = (

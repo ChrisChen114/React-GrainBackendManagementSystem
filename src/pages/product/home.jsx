@@ -5,6 +5,7 @@ import {
 import LinkButton from "../../components/link-button";
 import {reqProducts, reqSearchProducts, reqUpdateProductStatus} from "../../api";
 import {PAGE_SIZE} from "../../utils/constants";
+import MemoryUtils from "../../utils/memoryUtils";
 
 const Option = Select.Option;
 
@@ -69,15 +70,41 @@ class ProductHome extends Component {
                         // 就是说push 是可以在接收一个state的
                         <span>
                             {/* 将product对象,使用state传递给目标路由组件. 这样product就是state的一个属性了，可以在父组件home中使用 */}
+                            {/*  */}
                             <LinkButton
-                                onClick={() => this.props.history.push('/product/detail', {product})}>详情</LinkButton>
+                                onClick={() => this.showDetail(product)}>详情</LinkButton>
                             <LinkButton
-                                onClick={() => this.props.history.push('/product/addupdate', product)}>修改</LinkButton>
+                                onClick={() => this.showUpdate(product)}>修改</LinkButton>
+                            {/*
+                                BrowserRouter的写法，使用HashRouter下面的写法会存在问题，具体解决见上
+                                <LinkButton
+                                    onClick={() => this.props.history.push('/product/detail', {product})}>详情</LinkButton>
+                                <LinkButton
+                                    onClick={() => this.props.history.push('/product/addupdate', product)}>修改</LinkButton>
+                            */}
                         </span>
                     )
                 }
             },
         ];
+    }
+
+    /*
+    * 显示商品详情界面
+    * */
+    showDetail = (product)=>{
+        // 缓存product对象 => 给detail组件使用
+        MemoryUtils.product = product
+        this.props.history.push('/product/detail')
+    }
+
+    /*
+    * 显示修改商品界面
+    * */
+    showUpdate = (product)=>{
+        // 缓存product对象 => 给detail组件使用
+        MemoryUtils.product = product
+        this.props.history.push('/product/addupdate', product)
     }
 
     // 获取指定页码的列表数据显示
