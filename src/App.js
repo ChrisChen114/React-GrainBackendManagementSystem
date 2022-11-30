@@ -15,14 +15,15 @@ class App extends Component{
   //  <Button type="primary" onClick={this.handleClick}>Primary</Button>
   render() {
     return(
-        <HashRouter>
+        // <HashRouter>
+        <BrowserRouter>
             {/*<BrowserRouter>      不带#号的*/}
             {/* 子匹配路由 */}
             <Switch>
                 <Route path='/login' component={Login}></Route>
                 <Route path='/' component={Admin}></Route>
             </Switch>
-        </HashRouter>
+        </BrowserRouter>
     )
 
   }
